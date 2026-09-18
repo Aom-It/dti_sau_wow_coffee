@@ -1,0 +1,79 @@
+/**
+ * styles.css
+ * ธีม "ร้านกาแฟคั่วเข้ม" — พื้นหลังเอสเพรสโซ่เข้ม การ์ดครีมอุ่นๆ เน้นด้วยสีคาราเมล
+ */
+
+:root {
+  --espresso: #2B1B14;      /* พื้นหลังหลัก */
+  --cream: #F3E9DA;         /* การ์ด/พื้นผิวรอง */
+  --ink: #2B1B14;           /* ข้อความหลักบนพื้นครีม */
+  --ink-muted: #7A6754;     /* ข้อความรอง */
+  --amber: #C98A3D;         /* สีเน้นหลัก (คาราเมล) */
+  --amber-dark: #A56F2E;    /* hover/active */
+  --error: #B0503F;         /* แจ้งเตือน */
+  --line: #E1D3BC;          /* เส้นแบ่ง/ขีดเส้นใต้ */
+}
+
+body {
+  background-color: var(--espresso);
+  color: var(--ink);
+  font-family: 'Sarabun', sans-serif;
+}
+
+.font-display {
+  font-family: 'Chonburi', serif;
+}
+
+.brand-title {
+  color: var(--cream);
+}
+
+.auth-card {
+  background-color: var(--cream);
+  border-radius: 4px;
+}
+
+.field-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0.6rem 0.1rem;
+  color: var(--ink);
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--amber);
+  padding-bottom: calc(0.6rem - 1px);
+}
+
+.field-input::placeholder {
+  color: var(--ink-muted);
+  opacity: 0.6;
+}
+
+.btn-amber {
+  background-color: var(--amber);
+  color: var(--espresso);
+  border-radius: 3px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.btn-amber:hover {
+  background-color: var(--amber-dark);
+  color: var(--cream);
+}
+
+.btn-amber:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.text-error {
+  color: var(--error);
+}

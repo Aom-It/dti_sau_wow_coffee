@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เข้าสู่ระบบ — DTI SAU WOW COFFEE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body class="min-h-screen flex items-center justify-center px-4 py-12">
+
+  <div class="w-full max-w-sm">
+
+    <div class="text-center mb-8">
+      <h1 class="font-display text-3xl brand-title mb-1">DTI SAU WOW COFFEE</h1>
+      <p class="text-sm" style="color:#C9B79E">สั่งล่วงหน้า ไม่ต้องรอคิว</p>
+    </div>
+
+    <div class="auth-card p-8">
+      <h2 class="font-display text-xl mb-1">เข้าสู่ระบบ</h2>
+      <p class="text-sm mb-6" style="color:var(--ink-muted)">กรอกอีเมลและรหัสผ่านของคุณ</p>
+
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label for="email" class="block text-sm mb-1" style="color:var(--ink-muted)">อีเมล</label>
+          <input type="email" id="email" class="field-input" placeholder="you@example.com" required />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm mb-1" style="color:var(--ink-muted)">รหัสผ่าน</label>
+          <input type="password" id="password" class="field-input" placeholder="••••••••" required />
+        </div>
+
+        <p id="errorMsg" class="text-sm text-error hidden"></p>
+
+        <button type="submit" id="submitBtn" class="btn-amber w-full">เข้าสู่ระบบ</button>
+      </form>
+
+      <p class="text-sm mt-6" style="color:var(--ink-muted)">
+        ยังไม่มีบัญชี?
+        <a href="register.html" class="font-medium" style="color:var(--amber-dark)">ลงทะเบียนใช้งาน</a>
+      </p>
+    </div>
+
+    <p class="text-center text-sm mt-6">
+      <a href="index.html" style="color:#C9B79E">← กลับไปดูเมนูก่อน ไม่ต้องล็อกอิน</a>
+    </p>
+  </div>
+
+<script src="assets/api.js"></script>
+<script>
+  const form = document.getElementById('loginForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (localStorage.getItem('token')) {
+    window.location.href = 'index.html';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const result = await callApi('login', { email, password });
+
+    if (result.success) {
+      saveSession(result.token, result.user);
+      window.location.href = result.user.role === 'admin' ? 'admin/index.html' : 'index.html';
+    } else {
+      errorMsg.textContent = result.message || 'เข้าสู่ระบบไม่สำเร็จ';
+      errorMsg.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'เข้าสู่ระบบ';
+    }
+  });
+</script>
+
+</body>
+</html>

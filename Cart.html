@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ตะกร้าของฉัน — DTI SAU WOW COFFEE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+  <header style="background:var(--cream)">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="font-display text-lg" style="color:var(--espresso)">DTI SAU WOW COFFEE</a>
+      <a href="orders.html" class="text-sm" style="color:var(--ink-muted)">ประวัติการสั่งซื้อ</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-10">
+    <h1 class="font-display text-2xl mb-6" style="color:var(--espresso)">ตะกร้าของฉัน</h1>
+
+    <div id="emptyCart" class="hidden text-center py-16">
+      <p class="mb-4" style="color:var(--ink-muted)">ตะกร้าของคุณยังว่างอยู่</p>
+      <a href="index.html#menu" class="btn-amber inline-block">ไปเลือกเมนู</a>
+    </div>
+
+    <div id="cartItems" class="space-y-4 mb-8"></div>
+
+    <div id="checkoutArea" class="hidden">
+      <div class="mb-6">
+        <label class="block text-sm mb-1" style="color:var(--ink-muted)">หมายเหตุถึงร้าน (ถ้ามี)</label>
+        <textarea id="orderNote" class="field-input" rows="2" placeholder="เช่น ขอหวานน้อย"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between mb-6 pt-4" style="border-top:1px solid var(--line)">
+        <span class="font-medium">ยอดรวมทั้งหมด</span>
+        <span id="cartTotalDisplay" class="font-display text-xl" style="color:var(--amber-dark)">฿0.00</span>
+      </div>
+
+      <p id="checkoutError" class="text-sm text-error hidden mb-4"></p>
+
+      <button id="checkoutBtn" class="btn-amber w-full">ยืนยันสั่งซื้อ</button>
+    </div>
+  </main>
+
+<script src="assets/api.js"></script>
+<script src="assets/cart.js"></script>
+<script>
+  function formatMoney(n) {
+    return '฿' + Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const itemsEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('emptyCart');
+    const checkoutEl = document.getElementById('checkoutArea');
+
+    if (cart.length === 0) {
+      itemsEl.innerHTML = '';
+      emptyEl.classList.remove('hidden');
+      checkoutEl.classList.add('hidden');
+      return;
+    }
+    emptyEl.classList.add('hidden');
+    checkoutEl.classList.remove('hidden');
+
+    itemsEl.innerHTML = cart.map((entry, index) => `
+      <div class="auth-card p-4 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="font-medium">${entry.item_name}</p>
+          ${entry.selected_options.length > 0 ? `<p class="text-sm" style="color:var(--ink-muted)">${entry.selected_options.map(o => o.choice_name).join(', ')}</p>` : ''}
+          <div class="flex items-center gap-2 mt-2">
+            <button class="w-7 h-7 rounded-full" style="background:#EADFCB" onclick="changeQty(${index}, -1)">-</button>
+            <span class="w-6 text-center text-sm">${entry.quantity}</span>
+            <button class="w-7 h-7 rounded-full" style="background:#EADFCB" onclick="changeQty(${index}, 1)">+</button>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="font-medium tabular-nums">${formatMoney(entry.subtotal)}</p>
+          <button class="text-sm text-error mt-2" onclick="removeItem(${index})">ลบ</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('cartTotalDisplay').textContent = formatMoney(cartTotal());
+  }
+
+  window.changeQty = function (index, delta) {
+    const cart = getCart();
+    updateCartItemQty(index, cart[index].quantity + delta);
+    renderCart();
+  };
+
+  window.removeItem = function (index) {
+    removeFromCart(index);
+    renderCart();
+  };
+
+  document.getElementById('checkoutBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('checkoutError');
+    errorEl.classList.add('hidden');
+
+    if (!localStorage.getItem('token')) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const btn = document.getElementById('checkoutBtn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่งคำสั่งซื้อ...';
+
+    const cart = getCart();
+    const note = document.getElementById('orderNote').value.trim();
+
+    const result = await callApi('createOrder', { items: cart, note }, true);
+
+    if (result.success) {
+      clearCart();
+      window.location.href = 'orders.html';
+    } else {
+      errorEl.textContent = result.message || 'สั่งซื้อไม่สำเร็จ';
+      errorEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'ยืนยันสั่งซื้อ';
+    }
+  });
+
+  renderCart();
+</script>
+
+</body>
+</html>

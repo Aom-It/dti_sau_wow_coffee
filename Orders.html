@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ประวัติการสั่งซื้อ — DTI SAU WOW COFFEE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+  <header style="background:var(--cream)">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="font-display text-lg" style="color:var(--espresso)">DTI SAU WOW COFFEE</a>
+      <a href="cart.html" class="text-sm" style="color:var(--ink-muted)">ตะกร้า</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-10">
+    <h1 class="font-display text-2xl mb-6" style="color:var(--espresso)">ประวัติการสั่งซื้อ</h1>
+    <div id="emptyOrders" class="hidden text-center py-16">
+      <p style="color:var(--ink-muted)">ยังไม่มีประวัติการสั่งซื้อ</p>
+    </div>
+    <div id="ordersList" class="space-y-4"></div>
+  </main>
+
+<script src="assets/api.js"></script>
+<script>
+  requireAuth();
+
+  const STATUS_LABEL = {
+    pending: 'รอทางร้านยืนยัน',
+    preparing: 'กำลังเตรียมเครื่องดื่ม',
+    ready: 'พร้อมรับที่ร้าน',
+    completed: 'รับเรียบร้อยแล้ว',
+    cancelled: 'ยกเลิกแล้ว'
+  };
+  const STATUS_COLOR = {
+    pending: 'var(--ink-muted)',
+    preparing: 'var(--amber-dark)',
+    ready: '#2F6F4E',
+    completed: '#2F6F4E',
+    cancelled: 'var(--error)'
+  };
+
+  function formatMoney(n) {
+    return '฿' + Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  async function loadOrders() {
+    const result = await callApi('getMyOrders', {}, true);
+    const listEl = document.getElementById('ordersList');
+    const emptyEl = document.getElementById('emptyOrders');
+
+    if (!result.success || result.orders.length === 0) {
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    listEl.innerHTML = result.orders.map(order => `
+      <div class="auth-card p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div>
+            <p class="text-sm" style="color:var(--ink-muted)">${new Date(order.created_at).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+            <p class="text-sm font-medium mt-1" style="color:${STATUS_COLOR[order.status] || 'var(--ink-muted)'}">${STATUS_LABEL[order.status] || order.status}</p>
+          </div>
+          <span class="font-display" style="color:var(--amber-dark)">${formatMoney(order.total_amount)}</span>
+        </div>
+        <div class="space-y-1 text-sm" style="border-top:1px solid var(--line); padding-top:0.75rem">
+          ${order.items.map(it => `
+            <div class="flex justify-between">
+              <span>${it.item_name} × ${it.quantity}${it.selected_options.length > 0 ? ' (' + it.selected_options.map(o => o.choice_name).join(', ') + ')' : ''}</span>
+              <span style="color:var(--ink-muted)">${formatMoney(it.subtotal)}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${order.note ? `<p class="text-sm mt-3" style="color:var(--ink-muted)">หมายเหตุ: ${order.note}</p>` : ''}
+      </div>
+    `).join('');
+  }
+
+  loadOrders();
+</script>
+
+</body>
+</html>

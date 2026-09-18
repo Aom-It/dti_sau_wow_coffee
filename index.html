@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DTI SAU WOW COFFEE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-10" style="background:var(--cream)">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <span class="font-display text-lg" style="color:var(--espresso)">DTI SAU WOW COFFEE</span>
+      <nav class="flex items-center gap-5 text-sm">
+        <a href="#menu" style="color:var(--ink-muted)">เมนู</a>
+        <a href="#about" style="color:var(--ink-muted)">เกี่ยวกับร้าน</a>
+        <a href="#contact" style="color:var(--ink-muted)">ติดต่อ</a>
+        <a href="cart.html" class="relative" style="color:var(--ink-muted)">
+          ตะกร้า
+          <span id="cartBadge" class="hidden absolute -top-2 -right-3 text-xs rounded-full px-1.5" style="background:var(--amber);color:var(--espresso)">0</span>
+        </a>
+        <span id="navAuthArea"></span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="px-6 py-20 text-center" style="background:var(--espresso)">
+    <h1 id="shopName" class="font-display text-4xl sm:text-5xl brand-title mb-4">DTI SAU WOW COFFEE</h1>
+    <p id="shopHighlight" class="text-lg max-w-xl mx-auto mb-8" style="color:#D8C9B4"></p>
+    <a href="#menu" class="btn-amber inline-block">ดูเมนู & สั่งเลย</a>
+  </section>
+
+  <!-- โปรโมชั่น -->
+  <section id="promotions" class="px-6 py-12 max-w-5xl mx-auto hidden">
+    <h2 class="font-display text-2xl mb-6" style="color:var(--espresso)">โปรโมชั่นวันนี้</h2>
+    <div id="promoList" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+  </section>
+
+  <!-- เกี่ยวกับร้าน -->
+  <section id="about" class="px-6 py-16" style="background:#FBF6EE">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="font-display text-2xl mb-4" style="color:var(--espresso)">เรื่องราวของเรา</h2>
+      <p id="shopStory" class="leading-relaxed" style="color:var(--ink-muted)"></p>
+    </div>
+  </section>
+
+  <!-- เมนู -->
+  <section id="menu" class="px-6 py-16 max-w-5xl mx-auto">
+    <h2 class="font-display text-2xl mb-6" style="color:var(--espresso)">เมนูเครื่องดื่ม</h2>
+    <div id="categoryTabs" class="flex flex-wrap gap-2 mb-8"></div>
+    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- Footer / ติดต่อ -->
+  <footer id="contact" class="px-6 py-12" style="background:var(--espresso)">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm" style="color:#D8C9B4">
+      <div>
+        <h3 class="font-display text-lg brand-title mb-3">เวลาเปิด-ปิด</h3>
+        <p id="shopHours"></p>
+      </div>
+      <div>
+        <h3 class="font-display text-lg brand-title mb-3">ที่ตั้ง</h3>
+        <p id="shopLocation"></p>
+        <p id="shopPhone" class="mt-1"></p>
+      </div>
+      <div>
+        <h3 class="font-display text-lg brand-title mb-3">ช่องทางติดต่อ</h3>
+        <div id="shopSocial" class="flex flex-col gap-1"></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal เลือกตัวเลือก/จำนวน ก่อนหยิบใส่ตะกร้า -->
+  <div id="itemModal" class="hidden fixed inset-0 z-20 flex items-end sm:items-center justify-center p-0 sm:p-4" style="background:rgba(43,27,20,0.6)">
+    <div class="auth-card w-full sm:max-w-md max-h-[85vh] overflow-y-auto p-6 rounded-t-lg sm:rounded">
+      <div class="flex items-start justify-between mb-4">
+        <h3 id="modalItemName" class="font-display text-xl"></h3>
+        <button id="modalCloseBtn" class="text-xl leading-none" style="color:var(--ink-muted)">&times;</button>
+      </div>
+      <p id="modalItemDesc" class="text-sm mb-4" style="color:var(--ink-muted)"></p>
+      <div id="modalOptionGroups" class="space-y-5"></div>
+
+      <div class="flex items-center gap-4 mt-6">
+        <span class="text-sm" style="color:var(--ink-muted)">จำนวน</span>
+        <div class="flex items-center gap-3">
+          <button id="qtyMinusBtn" class="w-8 h-8 rounded-full" style="background:#EADFCB">-</button>
+          <span id="qtyValue" class="w-6 text-center">1</span>
+          <button id="qtyPlusBtn" class="w-8 h-8 rounded-full" style="background:#EADFCB">+</button>
+        </div>
+      </div>
+
+      <p id="modalError" class="text-sm text-error hidden mt-3"></p>
+
+      <button id="addToCartBtn" class="btn-amber w-full mt-6">
+        เพิ่มลงตะกร้า — <span id="modalTotalPrice">฿0.00</span>
+      </button>
+    </div>
+  </div>
+
+<script src="assets/api.js"></script>
+<script src="assets/cart.js"></script>
+<script>
+  let allItems = [];
+  let allCategories = [];
+  let currentCategoryId = 'all';
+
+  // ---------- Nav auth area ----------
+  function renderNav() {
+    const user = getCurrentUser();
+    const el = document.getElementById('navAuthArea');
+    if (user) {
+      const adminLink = user.role === 'admin' ? '<a href="admin/index.html" class="mr-4">แผงควบคุมร้าน</a>' : '';
+      el.innerHTML = `${adminLink}<span class="mr-4">สวัสดี ${user.name}</span><button id="logoutBtn" style="color:var(--error)">ออกจากระบบ</button>`;
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await callApi('logout', {}, true);
+        clearSession();
+        window.location.reload();
+      });
+    } else {
+      el.innerHTML = `<a href="login.html" style="color:var(--amber-dark)" class="font-medium">เข้าสู่ระบบ</a>`;
+    }
+  }
+
+  // ---------- ข้อมูลร้าน ----------
+  async function loadShopInfo() {
+    const result = await callApi('getShopInfo');
+    if (result.success && result.shop) {
+      const s = result.shop;
+      if (s.shop_name) {
+        document.getElementById('shopName').textContent = s.shop_name;
+        document.title = s.shop_name;
+      }
+      document.getElementById('shopHighlight').textContent = s.highlight || '';
+      document.getElementById('shopStory').textContent = s.story || '';
+      document.getElementById('shopHours').textContent = s.open_hours || '';
+      document.getElementById('shopLocation').textContent = s.location || '';
+      document.getElementById('shopPhone').textContent = s.phone || '';
+
+      const socialEl = document.getElementById('shopSocial');
+      let socialHtml = '';
+      if (s.facebook_url) socialHtml += `<a href="${s.facebook_url}" target="_blank">Facebook</a>`;
+      if (s.instagram_url) socialHtml += `<a href="${s.instagram_url}" target="_blank">Instagram</a>`;
+      if (s.line_id) socialHtml += `<span>LINE: ${s.line_id}</span>`;
+      socialEl.innerHTML = socialHtml;
+    }
+  }
+
+  // ---------- โปรโมชั่น ----------
+  async function loadPromotions() {
+    const result = await callApi('getPromotions');
+    if (result.success && result.promotions.length > 0) {
+      document.getElementById('promotions').classList.remove('hidden');
+      document.getElementById('promoList').innerHTML = result.promotions.map(p => `
+        <div class="auth-card p-5">
+          <h3 class="font-display text-lg mb-2">${p.title}</h3>
+          <p class="text-sm" style="color:var(--ink-muted)">${p.description || ''}</p>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ---------- เมนู ----------
+  function placeholderCup() {
+    return `<div class="w-full aspect-square flex items-center justify-center" style="background:#EADFCB">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--amber-dark)" stroke-width="1.5">
+        <path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/>
+        <path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/>
+        <path d="M7 3c0 1-1 1-1 2s1 1 1 2M11 3c0 1-1 1-1 2s1 1 1 2"/>
+      </svg>
+    </div>`;
+  }
+
+  async function loadMenu() {
+    const result = await callApi('getMenu');
+    if (!result.success) return;
+    allItems = result.items;
+    allCategories = result.categories;
+    renderCategoryTabs();
+    renderMenuGrid();
+  }
+
+  function renderCategoryTabs() {
+    const tabsEl = document.getElementById('categoryTabs');
+    const tabs = [{ category_id: 'all', name: 'ทั้งหมด' }, ...allCategories];
+    tabsEl.innerHTML = tabs.map(c => `
+      <button class="category-tab px-4 py-2 text-sm rounded-full" data-cat="${c.category_id}"
+        style="${c.category_id === currentCategoryId ? 'background:var(--amber);color:var(--espresso)' : 'background:#EADFCB;color:var(--ink-muted)'}">
+        ${c.name}
+      </button>
+    `).join('');
+    tabsEl.querySelectorAll('.category-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentCategoryId = btn.dataset.cat;
+        renderCategoryTabs();
+        renderMenuGrid();
+      });
+    });
+  }
+
+  function renderMenuGrid() {
+    const gridEl = document.getElementById('menuGrid');
+    const items = currentCategoryId === 'all'
+      ? allItems
+      : allItems.filter(i => i.category_id === currentCategoryId);
+
+    if (items.length === 0) {
+      gridEl.innerHTML = `<p style="color:var(--ink-muted)">ยังไม่มีเมนูในหมวดนี้</p>`;
+      return;
+    }
+
+    gridEl.innerHTML = items.map(item => `
+      <div class="auth-card overflow-hidden">
+        ${item.image_url ? `<img src="${item.image_url}" class="w-full aspect-square object-cover" alt="${item.name}" />` : placeholderCup()}
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="font-medium">${item.name}</h3>
+            <span class="font-display text-sm" style="color:var(--amber-dark)">฿${Number(item.price).toLocaleString('th-TH')}</span>
+          </div>
+          <p class="text-sm mb-3" style="color:var(--ink-muted)">${item.description || ''}</p>
+          <button class="btn-amber w-full text-sm py-2" onclick="openItemModal('${item.item_id}')">เพิ่มลงตะกร้า</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ---------- Modal เลือกตัวเลือก + จำนวน ----------
+  let modalItem = null;
+  let modalQty = 1;
+
+  const itemModal = document.getElementById('itemModal');
+  const modalOptionGroups = document.getElementById('modalOptionGroups');
+  const qtyValueEl = document.getElementById('qtyValue');
+  const modalError = document.getElementById('modalError');
+
+  window.openItemModal = function (itemId) {
+    modalItem = allItems.find(i => i.item_id === itemId);
+    if (!modalItem) return;
+
+    modalQty = 1;
+    qtyValueEl.textContent = modalQty;
+    modalError.classList.add('hidden');
+
+    document.getElementById('modalItemName').textContent = modalItem.name;
+    document.getElementById('modalItemDesc').textContent = modalItem.description || '';
+
+    const groups = modalItem.option_groups || [];
+    modalOptionGroups.innerHTML = groups.map(g => `
+      <div data-group-id="${g.group_id}" data-required="${g.is_required}" data-selection-type="${g.selection_type}">
+        <p class="text-sm font-medium mb-2">${g.group_name}${isTruthyStr(g.is_required) ? ' *' : ''}</p>
+        <div class="space-y-1">
+          ${g.choices.map(c => `
+            <label class="flex items-center justify-between text-sm py-1 cursor-pointer">
+              <span>
+                <input type="${g.selection_type === 'multiple' ? 'checkbox' : 'radio'}"
+                  name="group-${g.group_id}" value="${c.choice_id}"
+                  data-choice-name="${c.choice_name}" data-extra-price="${c.extra_price || 0}"
+                  class="mr-2" onchange="updateModalTotal()" />
+                ${c.choice_name}
+              </span>
+              <span style="color:var(--ink-muted)">${Number(c.extra_price || 0) > 0 ? '+฿' + c.extra_price : ''}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    updateModalTotal();
+    itemModal.classList.remove('hidden');
+  };
+
+  function isTruthyStr(v) {
+    return v === true || v === 'TRUE' || v === 'true' || v === 1;
+  }
+
+  function getSelectedOptions() {
+    const selected = [];
+    modalOptionGroups.querySelectorAll('input:checked').forEach(input => {
+      selected.push({
+        group_name: input.closest('[data-group-id]').querySelector('p').textContent.replace(' *', ''),
+        choice_name: input.dataset.choiceName,
+        extra_price: Number(input.dataset.extraPrice)
+      });
+    });
+    return selected;
+  }
+
+  window.updateModalTotal = function () {
+    const optsTotal = getSelectedOptions().reduce((s, o) => s + o.extra_price, 0);
+    const total = (Number(modalItem.price) + optsTotal) * modalQty;
+    document.getElementById('modalTotalPrice').textContent = '฿' + total.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+  };
+
+  document.getElementById('qtyMinusBtn').addEventListener('click', () => {
+    modalQty = Math.max(1, modalQty - 1);
+    qtyValueEl.textContent = modalQty;
+    updateModalTotal();
+  });
+  document.getElementById('qtyPlusBtn').addEventListener('click', () => {
+    modalQty += 1;
+    qtyValueEl.textContent = modalQty;
+    updateModalTotal();
+  });
+  document.getElementById('modalCloseBtn').addEventListener('click', () => {
+    itemModal.classList.add('hidden');
+  });
+
+  document.getElementById('addToCartBtn').addEventListener('click', () => {
+    // เช็คว่ากลุ่มที่ is_required เลือกครบไหม
+    const groups = modalOptionGroups.querySelectorAll('[data-group-id]');
+    for (const g of groups) {
+      if (isTruthyStr(g.dataset.required)) {
+        const checked = g.querySelectorAll('input:checked');
+        if (checked.length === 0) {
+          modalError.textContent = 'กรุณาเลือก "' + g.querySelector('p').textContent.replace(' *', '') + '"';
+          modalError.classList.remove('hidden');
+          return;
+        }
+      }
+    }
+
+    addToCart({
+      cart_item_id: 'cart_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      item_id: modalItem.item_id,
+      item_name: modalItem.name,
+      unit_price: Number(modalItem.price),
+      quantity: modalQty,
+      selected_options: getSelectedOptions()
+    });
+
+    itemModal.classList.add('hidden');
+  });
+
+  renderNav();
+  updateCartBadge();
+  loadShopInfo();
+  loadPromotions();
+  loadMenu();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ลงทะเบียน — DTI SAU WOW COFFEE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body class="min-h-screen flex items-center justify-center px-4 py-12">
+
+  <div class="w-full max-w-sm">
+
+    <div class="text-center mb-8">
+      <h1 class="font-display text-3xl brand-title mb-1">DTI SAU WOW COFFEE</h1>
+      <p class="text-sm" style="color:#C9B79E">สมัครสมาชิกเพื่อสั่งเครื่องดื่มล่วงหน้า</p>
+    </div>
+
+    <div class="auth-card p-8">
+      <h2 class="font-display text-xl mb-1">ลงทะเบียน</h2>
+      <p class="text-sm mb-6" style="color:var(--ink-muted)">สร้างบัญชีใหม่เพื่อเริ่มสั่งซื้อ</p>
+
+      <form id="registerForm" class="space-y-5">
+        <div>
+          <label for="name" class="block text-sm mb-1" style="color:var(--ink-muted)">ชื่อที่แสดง</label>
+          <input type="text" id="name" class="field-input" placeholder="ชื่อของคุณ" required />
+        </div>
+
+        <div>
+          <label for="phone" class="block text-sm mb-1" style="color:var(--ink-muted)">เบอร์โทร</label>
+          <input type="tel" id="phone" class="field-input" placeholder="08X-XXX-XXXX" required />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm mb-1" style="color:var(--ink-muted)">อีเมล</label>
+          <input type="email" id="email" class="field-input" placeholder="you@example.com" required />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm mb-1" style="color:var(--ink-muted)">รหัสผ่าน</label>
+          <input type="password" id="password" class="field-input" placeholder="อย่างน้อย 6 ตัวอักษร" required minlength="6" />
+        </div>
+
+        <div>
+          <label for="confirmPassword" class="block text-sm mb-1" style="color:var(--ink-muted)">ยืนยันรหัสผ่าน</label>
+          <input type="password" id="confirmPassword" class="field-input" placeholder="••••••••" required minlength="6" />
+        </div>
+
+        <p id="errorMsg" class="text-sm text-error hidden"></p>
+        <p id="successMsg" class="text-sm hidden" style="color:var(--amber-dark)"></p>
+
+        <button type="submit" id="submitBtn" class="btn-amber w-full">สร้างบัญชี</button>
+      </form>
+
+      <p class="text-sm mt-6" style="color:var(--ink-muted)">
+        มีบัญชีอยู่แล้ว?
+        <a href="login.html" class="font-medium" style="color:var(--amber-dark)">เข้าสู่ระบบ</a>
+      </p>
+    </div>
+
+    <p class="text-center text-sm mt-6">
+      <a href="index.html" style="color:#C9B79E">← กลับไปดูเมนูก่อน ไม่ต้องล็อกอิน</a>
+    </p>
+  </div>
+
+<script src="assets/api.js"></script>
+<script>
+  const form = document.getElementById('registerForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const successMsg = document.getElementById('successMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (localStorage.getItem('token')) {
+    window.location.href = 'index.html';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+    successMsg.classList.add('hidden');
+
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+      errorMsg.textContent = 'รหัสผ่านทั้งสองช่องไม่ตรงกัน';
+      errorMsg.classList.remove('hidden');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังสร้างบัญชี...';
+
+    const result = await callApi('register', { name, phone, email, password });
+
+    if (result.success) {
+      successMsg.textContent = 'สร้างบัญชีสำเร็จ กำลังพาไปหน้าเข้าสู่ระบบ...';
+      successMsg.classList.remove('hidden');
+      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+    } else {
+      errorMsg.textContent = result.message || 'สร้างบัญชีไม่สำเร็จ';
+      errorMsg.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'สร้างบัญชี';
+    }
+  });
+</script>
+
+</body>
+</html>
