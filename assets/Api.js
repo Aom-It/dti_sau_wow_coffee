@@ -58,10 +58,15 @@ function requireAuth() {
 }
 
 // การ์ดกันหน้าเฉพาะ admin: ถ้าไม่ใช่ admin ให้เด้งกลับหน้าแรก
+// หมายเหตุ: หน้า admin อยู่ในโฟลเดอร์ย่อย admin/ จึงเช็คเองแยกจาก requireAuth()
+// (ไม่เรียก requireAuth ตรงๆ เพราะ path ในนั้นเขียนไว้สำหรับหน้าที่ root ไม่ใช่ในโฟลเดอร์ย่อย)
 function requireAdmin() {
-  requireAuth();
+  if (!localStorage.getItem('token')) {
+    window.location.href = '../login.html';
+    return;
+  }
   const user = getCurrentUser();
   if (!user || user.role !== 'admin') {
-    window.location.href = 'index.html';
+    window.location.href = '../index.html';
   }
 }
